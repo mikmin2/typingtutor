@@ -1,0 +1,17 @@
+.button-unpressed {
+    -fx-base: white;
+    -fx-text-fill:black;
+    -fx-font-size: 15pt;
+}
+
+.button-pressed {
+    -fx-base: green;
+    -fx-text-fill:black;
+    -fx-font-size: 15pt;
+}
+
+
+.label-title {
+    -fx-font-size: 20pt;
+    -fx-Font-weight: bold;
+}
