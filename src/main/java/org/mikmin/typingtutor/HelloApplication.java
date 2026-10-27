@@ -15,6 +15,8 @@ import java.util.*;
 import java.util.function.UnaryOperator;
 
 public class HelloApplication extends Application {
+    // github repository https://github.com/mikmin2/typingtutor
+
     int currentIdx = 0;
     int correctCount = 0;
     int mistakeCount = 0;
@@ -74,7 +76,7 @@ public class HelloApplication extends Application {
         GridPane otherPane = new GridPane();
 
 
-        Scene scene = new Scene(mainPane, 800, 500);
+        Scene scene = new Scene(mainPane, 800, 600);
 
         if (getClass().getResource("/styling.css") != null) {
             scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/styling.css")).toExternalForm());
@@ -94,11 +96,21 @@ public class HelloApplication extends Application {
         spaceKey.setPrefSize(280,50);
         shiftKey.setPrefSize(90,50);
         backSpace.setPrefSize(120,50);
+        next.setPrefSize(70,50);
+        reset.setPrefSize(70,50);
 
         spaceKey.getStyleClass().add("button-unpressed");
         shiftKey.getStyleClass().add("button-unpressed");
         backSpace.getStyleClass().add("button-unpressed");
+        next.getStyleClass().add("button-unpressed");
+        reset.getStyleClass().add("button-unpressed");
         titleText.getStyleClass().add("label-title");
+        displayText.getStyleClass().add("label-display");
+        errorLabel.getStyleClass().add("label-error");
+        textCounter.getStyleClass().add("label-subLabel");
+        correctCounterLabel.getStyleClass().add("label-subLabel");
+        incorrectCounterLabel.getStyleClass().add("label-subLabel");
+        currentKeyLabel.getStyleClass().add("label-display");
 
         spaceKey.setFocusTraversable(false);
         shiftKey.setFocusTraversable(false);
@@ -184,6 +196,7 @@ public class HelloApplication extends Application {
 
         otherPane.add(next, 1, 0);
         otherPane.add(reset,0,0);
+        otherPane.setAlignment(Pos.CENTER_RIGHT);
 
         UnaryOperator<TextFormatter.Change> filter = change -> {
             String newText = change.getText();

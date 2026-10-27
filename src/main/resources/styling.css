@@ -15,3 +15,16 @@
     -fx-font-size: 20pt;
     -fx-Font-weight: bold;
 }
+
+.label-display {
+    -fx-font-size:15pt;
+}
+
+.label-error{
+    -fx-font-size:15pt;
+    -fx-text-fill:red;
+}
+
+.label-subLabel {
+    -fx-font-size:10pt;
+}
