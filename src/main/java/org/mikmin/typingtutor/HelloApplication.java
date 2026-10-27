@@ -5,15 +5,20 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+import java.util.function.UnaryOperator;
 
 public class HelloApplication extends Application {
+    int currentIdx = 0;
+    int correctCount = 0;
+    int mistakeCount = 0;
+    boolean wasCorrectChar;
+
     @Override
     public void start(Stage stage)  {
         Button aKey = new Button("a");
@@ -42,6 +47,7 @@ public class HelloApplication extends Application {
         Button xKey = new Button("x");
         Button yKey = new Button("y");
         Button zKey = new Button("z");
+        Button[] keyButtons = {aKey,bKey,cKey,dKey,eKey,fKey,gKey,hKey,iKey,jKey,kKey,lKey,mKey,nKey,oKey,pKey,qKey,rKey,sKey,tKey,uKey,vKey,wKey,xKey,yKey,zKey};
         Button spaceKey = new Button("space");
         Button shiftKey = new Button("shift");
         Button next = new Button("next");
@@ -51,15 +57,12 @@ public class HelloApplication extends Application {
         Label displayText = new Label("Try typing this text Do it as quickly and accurately as you can");
         Label titleText = new Label("Typing Tutor");
         Label textCounter = new Label("1 of 6");
-        Label correctCounterLabel = new Label("you've pressed 0 correct keys");
-        Label incorrectCounterLabel = new Label("you've pressed 0 incorrect keys");
+        Label correctCounterLabel = new Label("0 correct keys");
+        Label incorrectCounterLabel = new Label("0 incorrect keys");
+        Label currentKeyLabel = new Label(" ");
 
         TextField typingText = new TextField();
-        final int[] currentIdx = {0};
-        int currentText = 1;
-        final int[] correctCounter = {0};
-        final int[] incorrectCounter = {0};
-        final boolean[] isShiftPressed = {false};
+
 
         GridPane mainPane = new GridPane();
         GridPane keyPane = new GridPane();
@@ -70,74 +73,33 @@ public class HelloApplication extends Application {
 
         Scene scene = new Scene(mainPane, 800, 500);
 
-        displayText.setPrefSize(600,50);
-        typingText.setPrefSize(600,50);
-        aKey.setPrefSize(50,50);
-        bKey.setPrefSize(50,50);
-        cKey.setPrefSize(50,50);
-        dKey.setPrefSize(50,50);
-        eKey.setPrefSize(50,50);
-        fKey.setPrefSize(50,50);
-        gKey.setPrefSize(50,50);
-        hKey.setPrefSize(50,50);
-        iKey.setPrefSize(50,50);
-        jKey.setPrefSize(50,50);
-        kKey.setPrefSize(50,50);
-        lKey.setPrefSize(50,50);
-        mKey.setPrefSize(50,50);
-        nKey.setPrefSize(50,50);
-        oKey.setPrefSize(50,50);
-        pKey.setPrefSize(50,50);
-        qKey.setPrefSize(50,50);
-        rKey.setPrefSize(50,50);
-        sKey.setPrefSize(50,50);
-        tKey.setPrefSize(50,50);
-        uKey.setPrefSize(50,50);
-        vKey.setPrefSize(50,50);
-        wKey.setPrefSize(50,50);
-        xKey.setPrefSize(50,50);
-        yKey.setPrefSize(50,50);
-        zKey.setPrefSize(50,50);
-        spaceKey.setPrefSize(280,50);
-        shiftKey.setPrefSize(90,50);
-        backSpace.setPrefSize(90,50);
-
-        final Map<KeyCode, Button> keyMap = new HashMap<>();
-
         if (getClass().getResource("/styling.css") != null) {
-            scene.getStylesheets().add(getClass().getResource("/styling.css").toExternalForm());
+            scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/styling.css")).toExternalForm());
         }
 
-        aKey.getStyleClass().add("button-unpressed");
-        bKey.getStyleClass().add("button-unpressed");
-        cKey.getStyleClass().add("button-unpressed");
-        dKey.getStyleClass().add("button-unpressed");
-        eKey.getStyleClass().add("button-unpressed");
-        fKey.getStyleClass().add("button-unpressed");
-        gKey.getStyleClass().add("button-unpressed");
-        hKey.getStyleClass().add("button-unpressed");
-        iKey.getStyleClass().add("button-unpressed");
-        jKey.getStyleClass().add("button-unpressed");
-        kKey.getStyleClass().add("button-unpressed");
-        lKey.getStyleClass().add("button-unpressed");
-        mKey.getStyleClass().add("button-unpressed");
-        nKey.getStyleClass().add("button-unpressed");
-        oKey.getStyleClass().add("button-unpressed");
-        pKey.getStyleClass().add("button-unpressed");
-        qKey.getStyleClass().add("button-unpressed");
-        rKey.getStyleClass().add("button-unpressed");
-        sKey.getStyleClass().add("button-unpressed");
-        tKey.getStyleClass().add("button-unpressed");
-        uKey.getStyleClass().add("button-unpressed");
-        vKey.getStyleClass().add("button-unpressed");
-        wKey.getStyleClass().add("button-unpressed");
-        xKey.getStyleClass().add("button-unpressed");
-        yKey.getStyleClass().add("button-unpressed");
-        zKey.getStyleClass().add("button-unpressed");
-        backSpace.getStyleClass().add("button-unpressed");
-        shiftKey.getStyleClass().add("button-unpressed");
+        displayText.setPrefSize(600,50);
+        typingText.setPrefSize(600,50);
+
+        for (Button button : keyButtons) {
+            button.setPrefSize(50,50);
+            button.getStyleClass().add("button-unpressed");
+            button.setFocusTraversable(false);
+        }
+
+        spaceKey.setPrefSize(280,50);
+        shiftKey.setPrefSize(90,50);
+        backSpace.setPrefSize(120,50);
+
         spaceKey.getStyleClass().add("button-unpressed");
+        shiftKey.getStyleClass().add("button-unpressed");
+        backSpace.getStyleClass().add("button-unpressed");
         titleText.getStyleClass().add("label-title");
+
+        spaceKey.setFocusTraversable(false);
+        shiftKey.setFocusTraversable(false);
+        backSpace.setFocusTraversable(false);
+
+        final Map<KeyCode, Button> keyMap = new HashMap<>();
 
         keyMap.put(KeyCode.A, aKey);
         keyMap.put(KeyCode.B, bKey);
@@ -169,10 +131,6 @@ public class HelloApplication extends Application {
         keyMap.put(KeyCode.SHIFT, shiftKey);
         keyMap.put(KeyCode.BACK_SPACE, backSpace);
 
-        for (Button btn : keyMap.values()) {
-            btn.setFocusTraversable(false);
-        }
-
         mainPane.add(textPane, 0, 0);
         mainPane.add(keyPane,0,1);
         mainPane.add(altPane,0,2);
@@ -180,10 +138,13 @@ public class HelloApplication extends Application {
 
         textPane.add(titleText,0,0);
         textPane.add(displayText, 0,2);
-        textPane.add(typingText,0,3);
-        textPane.add(errorLabel, 0,4);
-        textPane.add(correctCounterLabel,1,4);
-        textPane.add(incorrectCounterLabel,1,5);
+        textPane.add(textCounter,0,3);
+        textPane.add(typingText,0,4);
+        textPane.add(errorLabel, 0,5);
+        textPane.add(correctCounterLabel,0,6);
+        textPane.add(incorrectCounterLabel,0,7);
+        textPane.add(currentKeyLabel,0,8);
+
         keyPane.add(qKey,0,0);
         keyPane.add(wKey,1,0);
         keyPane.add(eKey,2,0);
@@ -213,59 +174,77 @@ public class HelloApplication extends Application {
         keyPane.add(mKey,7,2);
         altPane.add(shiftKey,0,0);
         altPane.add(spaceKey,1,0);
+
         otherPane.add(next, 0, 0);
         otherPane.add(reset,0,0);
+
+        UnaryOperator<TextFormatter.Change> filter = change -> {
+            String newText = change.getText();
+            if (newText.matches("[a-zA-Z ]*")) {
+                return change;
+            }
+            return null;
+        };
+
+        typingText.setTextFormatter(new TextFormatter<>(filter));
 
         typingText.setOnKeyPressed(event -> {
             Button pressedButton = keyMap.get(event.getCode());
             if (pressedButton != null && !pressedButton.getStyleClass().contains("button-pressed")) {
                 pressedButton.getStyleClass().add("button-pressed");
-                if (Objects.equals(pressedButton.getText(), "shiftKey")) {
-                    isShiftPressed[0] = true;
+                }
+        });
+
+        typingText.setOnKeyReleased(e -> {
+            Button releasedButton = keyMap.get(e.getCode());
+            if (releasedButton != null) {
+                releasedButton.getStyleClass().remove("button-pressed");
+            } if(e.getCode().equals(KeyCode.BACK_SPACE) && currentIdx != 0) {
+                String previousDisplayChar;
+                String previousTypedChar;
+                errorLabel.setText(" ");
+
+                if (wasCorrectChar) {
+                    correctCount--;
+                    correctCounterLabel.setText(String.format("%d correct keys", correctCount));
+                    currentIdx--;
                 } else {
-                    if (Objects.equals(pressedButton.getText(), "backspace") ) {
-                        currentIdx[0]--;
-
-                    } else {
-                        char key = Objects.equals(pressedButton.getText(), "space") ? ' ' : pressedButton.getText().toCharArray()[0];
-                        currentIdx[0]++;
-                        if (isShiftPressed[0]) {
-                            if (isCharCorrect(displayText, currentIdx[0], toUpperCase(key))) {
-                                correctCounter[0]++;
-                                correctCounterLabel.setText(String.format("you've pressed %d correct keys", correctCounter[0]));
-                            } else {
-                                incorrectCounter[0]++;
-                                incorrectCounterLabel.setText(String.format("you've pressed %d incorrect keys", incorrectCounter[0]));
-                            }
-                        } else {
-                            if (isCharCorrect(displayText, currentIdx[0], toLowerCase(key))) {
-                                correctCounter[0]++;
-                                correctCounterLabel.setText(String.format("you've pressed %d correct keys", correctCounter[0]));
-                            } else {
-                                incorrectCounter[0]++;
-                                incorrectCounterLabel.setText(String.format("you've pressed %d incorrect keys", incorrectCounter[0]));
-                            }
-                        }
-
-                    }
+                    mistakeCount--;
+                    incorrectCounterLabel.setText(String.format("%d incorrect keys", mistakeCount));
+                    currentIdx--;
                 }
 
-            } else {
-                errorLabel.setText("This Key is not Handled");
+                    previousDisplayChar = displayText.getText().substring(currentIdx - 1, currentIdx);
+                    previousTypedChar = typingText.getText().substring(typingText.getText().length() - 1);
+                    wasCorrectChar = previousDisplayChar.equals(previousTypedChar);
+
             }
         });
 
-        typingText.setOnKeyReleased(event -> {
-            Button releasedButton = keyMap.get(event.getCode());
-            if (releasedButton != null) {
-                releasedButton.getStyleClass().remove("button-pressed");
-                if (Objects.equals(releasedButton.getText(), "shiftKey")) {
-                    isShiftPressed[0] = false;
+        typingText.setOnKeyTyped(e -> {
+            if (Character.isLetter(e.getCharacter().charAt(0) ) || e.getCharacter().charAt(0) == ' '){
+                String currentChar = displayText.getText().substring(currentIdx,currentIdx + 1);
+                currentIdx++;
+
+                if (e.getCharacter().equals(currentChar)) {
+                    correctCount++;
+                    correctCounterLabel.setText(String.format("%d correct keys",correctCount));
+                    wasCorrectChar = true;
+                    errorLabel.setText(" ");
                 } else {
+                    mistakeCount++;
+                    incorrectCounterLabel.setText(String.format("%d incorrect keys", mistakeCount));
+                    wasCorrectChar = false;
                     errorLabel.setText(" ");
                 }
+            } else {
+                if (!e.getCharacter().equals("\b")) {
+                    errorLabel.setText(String.format("%s is not handled", e.getText()));
+                }
             }
-
+            if (!e.getCharacter().equals("\b")) {
+            currentKeyLabel.setText(String.format("%s",e.getCharacter()));
+            }
         });
 
         stage.setTitle("Typing Tutor");
@@ -275,30 +254,5 @@ public class HelloApplication extends Application {
 
     public static void main(String[] args) {
         launch(args);
-    }
-
-
-    public static boolean isCharCorrect(Label label, int index, char nextChar) {
-        char correctChar = label.getText().toCharArray()[index];
-
-        return correctChar == nextChar;
-    }
-
-    public static char toUpperCase(char chr) {
-        String temp = String.valueOf(chr);
-        temp.toUpperCase();
-
-        return temp.toCharArray()[0];
-
-
-    }
-
-    public static char toLowerCase(char chr) {
-        String temp = String.valueOf(chr);
-        temp.toLowerCase();
-
-        return temp.toCharArray()[0];
-
-
     }
 }
