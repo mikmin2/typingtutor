@@ -1,6 +1,7 @@
 package org.mikmin.typingtutor;
 
 import javafx.application.Application;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -18,6 +19,7 @@ public class HelloApplication extends Application {
     int correctCount = 0;
     int mistakeCount = 0;
     boolean wasCorrectChar;
+    int displayTextCounter = 0;
 
     @Override
     public void start(Stage stage)  {
@@ -54,7 +56,7 @@ public class HelloApplication extends Application {
         Button reset = new Button("reset");
         Button backSpace = new Button("backspace");
         Label errorLabel = new Label(" ");
-        Label displayText = new Label("Try typing this text Do it as quickly and accurately as you can");
+        Label displayText = new Label("Try typing this text and do it as quickly and accurately as you can");
         Label titleText = new Label("Typing Tutor");
         Label textCounter = new Label("1 of 6");
         Label correctCounterLabel = new Label("0 correct keys");
@@ -65,6 +67,7 @@ public class HelloApplication extends Application {
 
 
         GridPane mainPane = new GridPane();
+        mainPane.setAlignment(Pos.CENTER);
         GridPane keyPane = new GridPane();
         GridPane altPane = new GridPane();
         GridPane textPane = new GridPane();
@@ -79,6 +82,8 @@ public class HelloApplication extends Application {
 
         displayText.setPrefSize(600,50);
         typingText.setPrefSize(600,50);
+
+        next.setDisable(true);
 
         for (Button button : keyButtons) {
             button.setPrefSize(50,50);
@@ -98,6 +103,8 @@ public class HelloApplication extends Application {
         spaceKey.setFocusTraversable(false);
         shiftKey.setFocusTraversable(false);
         backSpace.setFocusTraversable(false);
+        next.setFocusTraversable(false);
+        reset.setFocusTraversable(false);
 
         final Map<KeyCode, Button> keyMap = new HashMap<>();
 
@@ -175,7 +182,7 @@ public class HelloApplication extends Application {
         altPane.add(shiftKey,0,0);
         altPane.add(spaceKey,1,0);
 
-        otherPane.add(next, 0, 0);
+        otherPane.add(next, 1, 0);
         otherPane.add(reset,0,0);
 
         UnaryOperator<TextFormatter.Change> filter = change -> {
@@ -245,7 +252,47 @@ public class HelloApplication extends Application {
             if (!e.getCharacter().equals("\b")) {
             currentKeyLabel.setText(String.format("%s",e.getCharacter()));
             }
+
+            if (correctCount == displayText.getText().length() && displayTextCounter != 5) {
+                next.setDisable(false);
+            }
         });
+
+        String[] sampleTexts = {"Try typing this text and do it as quickly and accurately as you can",
+                "Next type another line of input data",
+                "The quick brown fox jumps over the lazy dog",
+                "Five big quacking zephyrs jolt my wax bed",
+                "Sympathizing would fix Quaker objectives",
+                "A large fawn jumped quickly over white zinc boxes"};
+
+        next.setOnAction(e -> {
+            displayTextCounter++;
+            displayText.setText(sampleTexts[displayTextCounter]);
+            typingText.setText("");
+            correctCount = 0;
+            mistakeCount = 0;
+            currentIdx = 0;
+            errorLabel.setText(" ");
+            correctCounterLabel.setText(String.format("%d correct keys",correctCount));
+            incorrectCounterLabel.setText(String.format("%d incorrect keys", mistakeCount));
+            textCounter.setText(String.format("%d of 6",displayTextCounter + 1));
+            next.setDisable(true);
+        });
+
+        reset.setOnAction(e -> {
+            displayTextCounter = 0;
+            displayText.setText(sampleTexts[displayTextCounter]);
+            typingText.setText("");
+            correctCount = 0;
+            mistakeCount = 0;
+            currentIdx = 0;
+            errorLabel.setText(" ");
+            correctCounterLabel.setText(String.format("%d correct keys",correctCount));
+            incorrectCounterLabel.setText(String.format("%d incorrect keys", mistakeCount));
+            textCounter.setText(String.format("%d of 6",displayTextCounter + 1));
+            next.setDisable(true);
+        });
+
 
         stage.setTitle("Typing Tutor");
         stage.setScene(scene);
